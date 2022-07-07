@@ -1,0 +1,31 @@
+{
+    "vertices": [
+        "list",
+        "of",
+        "vertex",
+        "names"
+    ],
+    "weighted": true,
+    "directed": true,
+    "edges": [
+        [
+            "start vertex",
+            "end vertex",
+            2
+        ],
+        [
+            "start2",
+            "end2",
+            "last element is edge weight (int expected, string here just for description)"
+        ],
+        [
+            "start3",
+            "end3, no third element if graph is not weighted"
+        ],
+        [
+            "start4",
+            "end4",
+            "edge is bidirectional if weighted is false"
+        ]
+    ]
+}
