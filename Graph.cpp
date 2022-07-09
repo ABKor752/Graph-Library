@@ -1,13 +1,59 @@
 #include "Graph.h"
 using namespace std;
 
-Graph::Graph(const string filename) {
+template <typename T>
+void Graph::Summary::bfs(bool checkCycle, T (*queueAdder)(T, pair<string, vector<double>>)) {
+    // RESET THE BOOLEANS
+    unordered_set<string> vertex_list = g.vertices;
+    while (!vertex_list.empty()) {
+        if (connected == -1) connected = 1;
+        else if (connected == 1) connected = 0;
+        queue<T> q;
+        T first;
+        first.name = *vertex_list.begin();
+        q.push(first);
+        while (!q.empty()) {
+            T next = q.front();
+            q.pop();
+            vertex_list.erase(next.name);
+            for (auto it = g.edges[next.name].begin(); it != g.edges[next.name].end(); ++it) {
+                if (!vertex_list.count(it->first)) {
+                    q.push(queueAdder(next, *it));
+                }
+                else containsCycle = 1;
+            }
+        }
+    }
+    if (containsCycle == -1) containsCycle = 0;
+}
+
+bool Graph::Summary::isSimple() {
+    if (!graph_facts.count("simple")) {
+        bool simple = true;
+        for (auto it = g.edges.begin(); it != g.edges.end(); ++it) {
+            for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+                if (it->first == it2->first || it2->second.size() > 1) {
+                    simple = false;
+                    break;
+                }
+            }
+            if (!simple) break;
+        }
+        graph_facts["simple"] = simple;
+    }
+    return graph_facts["simple"];
+}
+
+Graph::Graph(const string filename) : graphInfo(*this) {
     ifstream file(filename);
     if (!file.good())
         throw runtime_error("Could not locate file " + filename);
     json j;
     file >> j;
-    
+    string s = jsonAnalysis(j);
+    if (!s.empty()) {
+        throw runtime_error(s);
+    }
     file.close();
 }
 
